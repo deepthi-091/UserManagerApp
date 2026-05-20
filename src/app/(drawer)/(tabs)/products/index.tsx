@@ -5,13 +5,14 @@ import { View, Text, ScrollView, TouchableOpacity, useColorScheme } from 'react-
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { useAppContext } from '@/context/app-context';
-import { Colors } from '@/constants/theme';
+import { createStyles } from '@/styles';
 
 export default function ProductsListScreen() {
   const navigation = useNavigation();
   const { products, cart } = useAppContext();
   const scheme = useColorScheme();
-  const colors = Colors[scheme === 'unspecified' ? 'light' : scheme];
+  const isDark = scheme === 'dark';
+  const styles = createStyles(isDark);
 
   const cartCount = cart.reduce((sum, item) => sum + item.quantity, 0);
 
@@ -24,22 +25,15 @@ export default function ProductsListScreen() {
   );
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: colors.background }}>
-      <ScrollView style={{ flex: 1 }}>
-        <View style={{ padding: 16, gap: 12 }}>
-          <View
-            style={{
-              flexDirection: 'row',
-              justifyContent: 'space-between',
-              alignItems: 'center',
-            }}>
-            <Text style={{ color: colors.text, fontSize: 18, fontWeight: '600' }}>
-              Products
-            </Text>
+    <SafeAreaView style={styles.safeArea}>
+      <ScrollView style={styles.scroll}>
+        <View style={styles.scrollContent}>
+          <View style={styles.rowBetween}>
+            <Text style={styles.header}>Products</Text>
             <TouchableOpacity
               onPress={() => (navigation as any).navigate('cart')}
               style={{
-                backgroundColor: colors.tint,
+                backgroundColor: isDark ? '#818cf8' : '#6366f1',
                 paddingVertical: 8,
                 paddingHorizontal: 12,
                 borderRadius: 6,
@@ -70,38 +64,22 @@ export default function ProductsListScreen() {
             <TouchableOpacity
               key={product.id}
               onPress={() => (navigation as any).navigate('[id]', { id: product.id })}
-              style={{
-                backgroundColor: colors.backgroundElement,
-                borderRadius: 8,
-                padding: 12,
-                borderLeftWidth: 4,
-                borderLeftColor: colors.tint,
-              }}>
-              <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+              style={styles.card}>
+              <View style={styles.rowBetween}>
                 <View style={{ flex: 1 }}>
                   <Text style={{ fontSize: 24, marginBottom: 4 }}>{product.image}</Text>
-                  <Text style={{ color: colors.text, fontSize: 16, fontWeight: '600' }}>
-                    {product.name}
-                  </Text>
-                  <Text style={{ color: colors.tabIconDefault, fontSize: 13, marginTop: 4 }}>
+                  <Text style={[styles.mediumText, styles.boldText]}>{product.name}</Text>
+                  <Text style={[styles.mediumText, styles.secondaryText, { marginTop: 4 }]}>
                     {product.description}
                   </Text>
                 </View>
               </View>
 
-              <View
-                style={{
-                  flexDirection: 'row',
-                  justifyContent: 'space-between',
-                  alignItems: 'center',
-                  marginTop: 8,
-                }}>
-                <Text style={{ color: colors.tint, fontSize: 18, fontWeight: '700' }}>
+              <View style={[styles.rowBetween, { marginTop: 8 }]}>
+                <Text style={[styles.boldText, styles.accentText, { fontSize: 18 }]}>
                   ₹{product.price}
                 </Text>
-                <Text style={{ color: colors.tabIconDefault, fontSize: 12 }}>
-                  Stock: {product.stock}
-                </Text>
+                <Text style={styles.smallText}>Stock: {product.stock}</Text>
               </View>
             </TouchableOpacity>
           ))}

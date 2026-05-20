@@ -5,13 +5,14 @@ import { View, Text, ScrollView, TouchableOpacity, useColorScheme } from 'react-
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { useAppContext } from '@/context/app-context';
-import { Colors } from '@/constants/theme';
+import { createStyles } from '@/styles';
 
 export default function UsersListScreen() {
   const navigation = useNavigation();
   const { users, deleteUser } = useAppContext();
   const scheme = useColorScheme();
-  const colors = Colors[scheme === 'unspecified' ? 'light' : scheme];
+  const isDark = scheme === 'dark';
+  const styles = createStyles(isDark);
 
   useFocusEffect(
     useCallback(() => {
@@ -22,67 +23,32 @@ export default function UsersListScreen() {
   );
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: colors.background }}>
-      <ScrollView style={{ flex: 1 }}>
-        <View style={{ padding: 16, gap: 12 }}>
+    <SafeAreaView style={styles.safeArea}>
+      <ScrollView style={styles.scroll}>
+        <View style={styles.scrollContent}>
           <TouchableOpacity
             onPress={() => (navigation as any).navigate('add')}
-            style={{
-              backgroundColor: colors.tint,
-              paddingVertical: 12,
-              paddingHorizontal: 16,
-              borderRadius: 8,
-              alignItems: 'center',
-            }}>
-            <Text style={{ color: '#fff', fontSize: 16, fontWeight: '600' }}>
-              ➕ Add User
-            </Text>
+            style={styles.button}>
+            <Text style={styles.buttonText}>➕ Add User</Text>
           </TouchableOpacity>
 
           {users.length === 0 ? (
             <View style={{ alignItems: 'center', paddingVertical: 40 }}>
-              <Text style={{ color: colors.text, fontSize: 16 }}>
-                No users found. Add a new user to get started!
-              </Text>
+              <Text style={styles.mediumText}>No users found. Add a new user to get started!</Text>
             </View>
           ) : (
             users.map((user) => (
-              <View
-                key={user.id}
-                style={{
-                  backgroundColor: colors.backgroundElement,
-                  borderRadius: 8,
-                  padding: 12,
-                  borderLeftWidth: 4,
-                  borderLeftColor: colors.tint,
-                }}>
-                <Text style={{ color: colors.text, fontSize: 16, fontWeight: '600' }}>
-                  {user.name}
-                </Text>
-                <Text style={{ color: colors.tabIconDefault, fontSize: 14, marginTop: 4 }}>
-                  📧 {user.email}
-                </Text>
-                <Text style={{ color: colors.tabIconDefault, fontSize: 14, marginTop: 2 }}>
-                  📱 {user.phone}
-                </Text>
-                <Text style={{ color: colors.tabIconDefault, fontSize: 14, marginTop: 2 }}>
-                  📍 {user.address}
-                </Text>
+              <View key={user.id} style={styles.card}>
+                <Text style={[styles.mediumText, styles.boldText]}>{user.name}</Text>
+                <Text style={[styles.smallText, { marginTop: 4 }]}>📧 {user.email}</Text>
+                <Text style={[styles.smallText, { marginTop: 2 }]}>📱 {user.phone}</Text>
+                <Text style={[styles.smallText, { marginTop: 2 }]}>📍 {user.address}</Text>
 
-                <View style={{ flexDirection: 'row', gap: 8, marginTop: 12 }}>
+                <View style={[styles.row, { marginTop: 12 }]}>
                   <TouchableOpacity
                     onPress={() => (navigation as any).navigate('[id]', { id: user.id })}
-                    style={{
-                      flex: 1,
-                      backgroundColor: colors.tint,
-                      paddingVertical: 8,
-                      paddingHorizontal: 12,
-                      borderRadius: 6,
-                      alignItems: 'center',
-                    }}>
-                    <Text style={{ color: '#fff', fontSize: 14, fontWeight: '500' }}>
-                      View/Edit
-                    </Text>
+                    style={[styles.button, { flex: 1 }]}>
+                    <Text style={styles.buttonText}>View/Edit</Text>
                   </TouchableOpacity>
 
                   <TouchableOpacity
@@ -94,9 +60,7 @@ export default function UsersListScreen() {
                       borderRadius: 6,
                       alignItems: 'center',
                     }}>
-                    <Text style={{ color: '#fff', fontSize: 14, fontWeight: '500' }}>
-                      Delete
-                    </Text>
+                    <Text style={{ color: '#fff', fontSize: 14, fontWeight: '500' }}>Delete</Text>
                   </TouchableOpacity>
                 </View>
               </View>
