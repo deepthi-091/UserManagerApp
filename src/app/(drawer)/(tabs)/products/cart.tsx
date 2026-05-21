@@ -124,6 +124,12 @@ export default function CartScreen() {
                 ₹{item.product.price * item.quantity}
               </Text>
             </View>
+
+            <TouchableOpacity
+              onPress={() => (navigation as any).navigate('rating', { productId: item.product.id })}
+              style={[styles.row, { alignItems: 'center', marginTop: 8 }]}>
+              <Text style={[styles.smallText, styles.accentText]}>⭐ Rate this product</Text>
+            </TouchableOpacity>
           </View>
         ))}
 

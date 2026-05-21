@@ -30,3 +30,29 @@ export interface Order {
   status: 'pending' | 'confirmed' | 'shipped' | 'delivered';
   createdAt: Date;
 }
+
+export interface RatingImage {
+  uri: string;
+  uploadedUrl?: string;
+  uploading: boolean;
+  error?: string;
+}
+
+export interface ProductRating {
+  id: string;
+  productId: string;
+  stars: number;
+  reviewText: string;
+  images: RatingImage[];
+  createdAt: Date;
+  submitting: boolean;
+  submitted: boolean;
+}
+
+export interface MockUploadResponse {
+  id: number;
+  title: string;
+  url: string;
+  thumbnailUrl: string;
+  albumId: number;
+}

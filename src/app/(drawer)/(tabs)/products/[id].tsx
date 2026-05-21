@@ -15,7 +15,7 @@ import { createStyles } from '@/styles';
 export default function ProductDetailScreen() {
   const navigation = useNavigation();
   const { id } = useLocalSearchParams();
-  const { products, addToCart } = useAppContext();
+  const { products, addToCart, getAverageRating } = useAppContext();
   const scheme = useColorScheme();
   const isDark = scheme === 'dark';
   const styles = createStyles(isDark);
@@ -50,9 +50,15 @@ export default function ProductDetailScreen() {
             <Text style={{ fontSize: 80 }}>{product.image}</Text>
           </View>
 
-          <View>
-            <Text style={[styles.subheader]}>{product.name}</Text>
-          </View>
+          {getAverageRating(product.id) !== null && (
+            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4, marginBottom: 4 }}>
+              <Text style={{ fontSize: 16, color: isDark ? '#fbbf24' : '#f59e0b' }}>★</Text>
+              <Text style={[styles.smallText, { color: isDark ? '#fbbf24' : '#f59e0b' }]}>
+                {getAverageRating(product.id)?.toFixed(1)} • Product Ratings
+              </Text>
+            </View>
+          )}
+          <Text style={[styles.subheader]}>{product.name}</Text>
 
           <View>
             <Text style={[styles.mediumText, styles.secondaryText]}>{product.description}</Text>
@@ -119,6 +125,15 @@ export default function ProductDetailScreen() {
 
           <TouchableOpacity onPress={() => navigation.goBack()} style={styles.secondaryButton}>
             <Text style={styles.secondaryButtonText}>Continue Shopping</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            onPress={() => (navigation as any).navigate('rating', { productId: product.id })}
+            style={[
+              styles.secondaryButton,
+              { borderWidth: 2, borderColor: isDark ? '#818cf8' : '#6366f1' },
+            ]}>
+            <Text style={[styles.secondaryButtonText, styles.accentText]}>⭐ Rate This Product</Text>
           </TouchableOpacity>
         </View>
       </ScrollView>

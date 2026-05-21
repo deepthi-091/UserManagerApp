@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState, useCallback } from 'react';
-import { User, Product, CartItem } from '@/types';
+import { User, Product, CartItem, ProductRating } from '@/types';
 
 interface AppContextType {
   users: User[];
@@ -13,6 +13,11 @@ interface AppContextType {
   updateCartQuantity: (productId: string, quantity: number) => void;
   clearCart: () => void;
   getCartTotal: () => number;
+  ratings: ProductRating[];
+  addRating: (rating: Omit<ProductRating, 'id' | 'createdAt' | 'submitting' | 'submitted'>) => string;
+  updateRating: (id: string, updates: Partial<ProductRating>) => void;
+  getRatingsForProduct: (productId: string) => ProductRating[];
+  getAverageRating: (productId: string) => number | null;
 }
 
 const AppContext = createContext<AppContextType | undefined>(undefined);
@@ -82,6 +87,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
 
   const [products] = useState<Product[]>(mockProducts);
   const [cart, setCart] = useState<CartItem[]>([]);
+  const [ratings, setRatings] = useState<ProductRating[]>([]);
 
   const addUser = useCallback((user: Omit<User, 'id' | 'createdAt'>) => {
     const newUser: User = {
@@ -140,6 +146,42 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     return cart.reduce((total, item) => total + item.product.price * item.quantity, 0);
   }, [cart]);
 
+  const addRating = useCallback(
+    (rating: Omit<ProductRating, 'id' | 'createdAt' | 'submitting' | 'submitted'>) => {
+      const id = Date.now().toString();
+      const newRating: ProductRating = {
+        ...rating,
+        id,
+        createdAt: new Date(),
+        submitting: false,
+        submitted: false,
+      };
+      setRatings((prev) => [newRating, ...prev]);
+      return id;
+    },
+    []
+  );
+
+  const updateRating = useCallback((id: string, updates: Partial<ProductRating>) => {
+    setRatings((prev) =>
+      prev.map((r) => (r.id === id ? { ...r, ...updates } : r))
+    );
+  }, []);
+
+  const getRatingsForProduct = useCallback(
+    (productId: string) => ratings.filter((r) => r.productId === productId),
+    [ratings]
+  );
+
+  const getAverageRating = useCallback(
+    (productId: string): number | null => {
+      const relevant = ratings.filter((r) => r.productId === productId && r.submitted);
+      if (relevant.length === 0) return null;
+      return relevant.reduce((sum, r) => sum + r.stars, 0) / relevant.length;
+    },
+    [ratings]
+  );
+
   return (
     <AppContext.Provider
       value={{
@@ -154,6 +196,11 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
         updateCartQuantity,
         clearCart,
         getCartTotal,
+        ratings,
+        addRating,
+        updateRating,
+        getRatingsForProduct,
+        getAverageRating,
       }}>
       {children}
     </AppContext.Provider>

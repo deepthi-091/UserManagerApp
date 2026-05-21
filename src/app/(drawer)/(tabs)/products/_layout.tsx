@@ -42,6 +42,13 @@ export default function ProductsStackLayout() {
           title: 'Shopping Cart',
         }}
       />
+      <Stack.Screen
+        name="rating"
+        options={{
+          title: 'Rate Product',
+          presentation: 'modal',
+        }}
+      />
     </Stack>
   );
 }

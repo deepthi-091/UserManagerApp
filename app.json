@@ -34,6 +34,13 @@
             "imageWidth": 76
           }
         }
+      ],
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "Allow $(PRODUCT_NAME) to access your photos for product reviews.",
+          "cameraPermission": "Allow $(PRODUCT_NAME) to take photos for product reviews."
+        }
       ]
     ],
     "experiments": {
