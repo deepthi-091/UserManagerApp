@@ -5,15 +5,18 @@ import { useColorScheme } from 'react-native';
 
 import { AnimatedSplashOverlay } from '@/components/animated-icon';
 import { AppProvider } from '@/context/app-context';
+import { AddressProvider } from '@/context/address-context';
 
 export default function RootLayout() {
   const colorScheme = useColorScheme();
   return (
     <AppProvider>
-      <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-        <AnimatedSplashOverlay />
-        <Slot />
-      </ThemeProvider>
+      <AddressProvider>
+        <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
+          <AnimatedSplashOverlay />
+          <Slot />
+        </ThemeProvider>
+      </AddressProvider>
     </AppProvider>
   );
 }

@@ -43,6 +43,13 @@ export default function UsersStackLayout() {
           title: 'User Details',
         }}
       />
+      <Stack.Screen
+        name="address-select"
+        options={{
+          title: 'Select Address',
+          presentation: 'modal',
+        }}
+      />
     </Stack>
   );
 }

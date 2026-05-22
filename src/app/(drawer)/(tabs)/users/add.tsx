@@ -11,11 +11,14 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { useAppContext } from '@/context/app-context';
+import { useAddressContext } from '@/context/address-context';
 import { createStyles } from '@/styles';
+import { locationService } from '@/services/locationService';
 
 export default function AddUserScreen() {
   const navigation = useNavigation();
   const { addUser } = useAppContext();
+  const { selectedAddress, clearSelectedAddress } = useAddressContext();
   const scheme = useColorScheme();
   const isDark = scheme === 'dark';
   const styles = createStyles(isDark);
@@ -23,8 +26,9 @@ export default function AddUserScreen() {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [phone, setPhone] = useState('');
-  const [address, setAddress] = useState('');
   const [error, setError] = useState('');
+
+  const address = selectedAddress ? locationService.formatAddress(selectedAddress) : '';
 
   const handleAddUser = () => {
     if (!name.trim() || !email.trim() || !phone.trim() || !address.trim()) {
@@ -90,15 +94,37 @@ export default function AddUserScreen() {
 
           <View>
             <Text style={styles.label}>Address</Text>
-            <TextInput
-              placeholder="Enter address"
-              value={address}
-              onChangeText={setAddress}
-              multiline
-              numberOfLines={3}
-              placeholderTextColor={isDark ? '#94a3b8' : '#9ca3af'}
-              style={[styles.input, { textAlignVertical: 'top' }]}
-            />
+            <TouchableOpacity
+              onPress={() => (navigation as any).navigate('address-select')}
+              style={[
+                styles.input,
+                {
+                  minHeight: 80,
+                  justifyContent: 'center',
+                  paddingVertical: 12,
+                },
+              ]}>
+              <Text
+                style={[
+                  styles.mediumText,
+                  address ? styles.text : styles.secondaryText,
+                ]}>
+                {address || '📍 Select Address'}
+              </Text>
+            </TouchableOpacity>
+            {address && (
+              <TouchableOpacity
+                onPress={() => {
+                  clearSelectedAddress();
+                }}
+                style={{
+                  marginTop: 8,
+                  paddingHorizontal: 12,
+                  paddingVertical: 6,
+                }}>
+                <Text style={[styles.smallText, styles.accentText]}>✕ Clear Address</Text>
+              </TouchableOpacity>
+            )}
           </View>
 
           <View style={[styles.row, { marginTop: 8 }]}>

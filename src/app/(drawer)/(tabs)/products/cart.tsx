@@ -1,5 +1,5 @@
 import { useNavigation } from 'expo-router';
-import React, { useState } from 'react';
+import React, { useState, useCallback } from 'react';
 import {
   View,
   Text,
@@ -12,25 +12,29 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { useAppContext } from '@/context/app-context';
+import { useAddressContext } from '@/context/address-context';
 import { createStyles } from '@/styles';
+import { locationService } from '@/services/locationService';
 
 export default function CartScreen() {
   const navigation = useNavigation();
   const { cart, removeFromCart, updateCartQuantity, getCartTotal, clearCart } = useAppContext();
+  const { selectedAddress, clearSelectedAddress } = useAddressContext();
   const scheme = useColorScheme();
   const isDark = scheme === 'dark';
   const styles = createStyles(isDark);
 
   const [showOrderModal, setShowOrderModal] = useState(false);
-  const [address, setAddress] = useState('');
   const [paymentMethod, setPaymentMethod] = useState<'cash' | 'phonepay' | 'paytm' | null>(null);
   const [orderPlaced, setOrderPlaced] = useState(false);
+
+  const address = selectedAddress ? locationService.formatAddress(selectedAddress) : '';
 
   const total = getCartTotal();
 
   const handlePlaceOrder = () => {
     if (!address.trim()) {
-      alert('Please enter delivery address');
+      alert('Please select a delivery address');
       return;
     }
 
@@ -44,7 +48,7 @@ export default function CartScreen() {
       clearCart();
       setShowOrderModal(false);
       setOrderPlaced(false);
-      setAddress('');
+      clearSelectedAddress();
       setPaymentMethod(null);
       navigation.goBack();
     }, 2000);
@@ -198,15 +202,37 @@ export default function CartScreen() {
                 <>
                   <View>
                     <Text style={styles.label}>Delivery Address</Text>
-                    <TextInput
-                      placeholder="Enter delivery address"
-                      value={address}
-                      onChangeText={setAddress}
-                      multiline
-                      numberOfLines={3}
-                      placeholderTextColor={isDark ? '#94a3b8' : '#9ca3af'}
-                      style={[styles.input, { textAlignVertical: 'top' }]}
-                    />
+                    <TouchableOpacity
+                      onPress={() => (navigation as any).navigate('address-select')}
+                      style={[
+                        styles.input,
+                        {
+                          minHeight: 80,
+                          justifyContent: 'center',
+                          paddingVertical: 12,
+                        },
+                      ]}>
+                      <Text
+                        style={[
+                          styles.mediumText,
+                          address ? styles.text : styles.secondaryText,
+                        ]}>
+                        {address || '📍 Select Delivery Address'}
+                      </Text>
+                    </TouchableOpacity>
+                    {address && (
+                      <TouchableOpacity
+                        onPress={() => {
+                          clearSelectedAddress();
+                        }}
+                        style={{
+                          marginTop: 8,
+                          paddingHorizontal: 12,
+                          paddingVertical: 6,
+                        }}>
+                        <Text style={[styles.smallText, styles.accentText]}>✕ Clear Address</Text>
+                      </TouchableOpacity>
+                    )}
                   </View>
 
                   <View>

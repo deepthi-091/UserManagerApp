@@ -4,6 +4,7 @@ export interface User {
   email: string;
   phone: string;
   address: string;
+  structuredAddress?: StructuredAddress;
   createdAt: Date;
 }
 
@@ -26,6 +27,7 @@ export interface Order {
   items: CartItem[];
   totalPrice: number;
   address: string;
+  structuredAddress?: StructuredAddress;
   paymentMethod: 'cash' | 'phonepay' | 'paytm';
   status: 'pending' | 'confirmed' | 'shipped' | 'delivered';
   createdAt: Date;
@@ -55,4 +57,23 @@ export interface MockUploadResponse {
   url: string;
   thumbnailUrl: string;
   albumId: number;
+}
+
+export interface LocationCoordinates {
+  latitude: number;
+  longitude: number;
+}
+
+export interface StructuredAddress {
+  country: string;
+  city: string;
+  street: string;
+  coordinates: LocationCoordinates;
+  label?: string;
+}
+
+export interface Country {
+  code: string;
+  name: string;
+  cities: string[];
 }

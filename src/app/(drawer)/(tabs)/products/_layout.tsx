@@ -49,6 +49,13 @@ export default function ProductsStackLayout() {
           presentation: 'modal',
         }}
       />
+      <Stack.Screen
+        name="address-select"
+        options={{
+          title: 'Select Address',
+          presentation: 'modal',
+        }}
+      />
     </Stack>
   );
 }
